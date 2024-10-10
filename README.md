@@ -3,9 +3,7 @@
 Prototype-based breast cancer prediction on mammography images with 3 prototype-based models - ProtoPNet, BRAIxProtoPNet++ and PIP-Net.
 Each model contains the prototype evaluation framework for coherence code for evaluating the quality of the prototypes.
 
-## Running the code
-
-### Prerequisites
+## Prerequisites
 - Python 3.10.6
 - Pytorch 1.13.0
 - Cuda 11.7
@@ -15,6 +13,8 @@ Each model contains the prototype evaluation framework for coherence code for ev
 - openpyxl 3.0.10
 - scikit-learn 1.1.1
 - seaborn 0.11.2
+
+## Dataset
 
 ### Access the dataset
 
@@ -31,6 +31,7 @@ We preprocessed the dataset as follows:
 1. Convert the dicom images to png with this [script](/src/data_processing/dicom_to_png.py). <br/>
 2. Convert the original png images to preprocessed png images (to remove irrelevant information and remove extra black background) according to our [image cleaning script](/src/data_processing/image_cleaning.py). Example of the results of our image preprocessing algorithm can be found [here](/image-preprocessing). We used these preprocessed images as input to our model.
 
+## Model Training
 
 ### ProtoPNet
 
