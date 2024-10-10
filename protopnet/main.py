@@ -279,7 +279,8 @@ else:
 
 modelcheckpoint = save.ModelCheckpoint(log_dir+'/'+'net_trained_best'+'_'+str(randseedother)+'_'+str(randseeddata), 'auc', best_score_val)
 
-'''for epoch in range(start_epoch, num_train_epochs+1):
+#model training across num_train_epochs
+for epoch in range(start_epoch, num_train_epochs+1):
     log('epoch: \t{0}'.format(epoch))
     
     #if epoch!=11:
@@ -390,7 +391,8 @@ modelcheckpoint = save.ModelCheckpoint(log_dir+'/'+'net_trained_best'+'_'+str(ra
     plt.clf()
     plt.plot(lrs)
     plt.savefig(os.path.join(model_dir,'lr_protopnet'+'_'+str(randseedother)+'_'+str(randseeddata)+'.png'))
-'''        
+
+#added this just for experimenting with something. Not important.         
 '''push.push_prototypes(
     train_push_loader, # pytorch dataloader (must be unnormalized in [0,1])
     prototype_network_parallel=ppnet, # pytorch network with prototype_vectors
@@ -408,9 +410,11 @@ modelcheckpoint = save.ModelCheckpoint(log_dir+'/'+'net_trained_best'+'_'+str(ra
 info_test, _ = tnt.test(model=ppnet, dataloader=test_loader, epoch=start_epoch, coefs=coefs, class_specific=class_specific, log=log, device=device)
 '''
 
-if dataset == 'cbis-ddsm':
+# uncomment for calculating the IoU and DSC scores of the match between the prototypes and the ROIs 
+'''if dataset == 'cbis-ddsm':
     get_images(ppnet, test_loader, df_test, device, args, 'IOU')
     get_images(ppnet, test_loader, df_test, device, args, 'DSC')
+'''
 
 '''end_time = datetime.datetime.now()
 log("Start time: {0}".format(str(begin_time)))
