@@ -20,7 +20,7 @@ Each model contains the prototype evaluation framework for coherence code for ev
 
 We used 3 public datasets in our work - CBIS, VinDr and CMMD.
 
-- CBIS can be downloaded from [here](https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=22516629). <br/>.
+- CBIS can be downloaded from [here](https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=22516629).
 - VinDr can be downloaded from [here](https://vindr.ai/datasets/mammo).
 - CMMD can be downloaded from [here](https://www.cancerimagingarchive.net/collection/cmmd/).
 
