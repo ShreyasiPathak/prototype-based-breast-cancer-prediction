@@ -16,6 +16,22 @@ Each model contains the prototype evaluation framework for coherence code for ev
 - scikit-learn 1.1.1
 - seaborn 0.11.2
 
+### Access the dataset
+
+We used 3 public datasets in our work - CBIS, VinDr and CMMD.
+
+- CBIS can be downloaded from [here](https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=22516629). <br/>.
+- VinDr can be downloaded from [here](https://vindr.ai/datasets/mammo).
+- CMMD can be downloaded from [here](https://www.cancerimagingarchive.net/collection/cmmd/).
+
+### Preprocess the dataset
+
+We preprocessed the dataset as follows:
+
+1. Convert the dicom images to png with this [script](/src/data_processing/dicom_to_png.py). <br/>
+2. Convert the original png images to preprocessed png images (to remove irrelevant information and remove extra black background) according to our [image cleaning script](/src/data_processing/image_cleaning.py). Example of the results of our image preprocessing algorithm can be found [here](/image-preprocessing). We used these preprocessed images as input to our model.
+
+
 ### ProtoPNet
 
 Train ProtoPNet model on breast cancer 
