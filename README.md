@@ -3,10 +3,10 @@
 Prototype-based breast cancer prediction with 3 prototype-based models - ProtoPNet, BRAIxProtoPNet++ and PIP-Net.
 Each model contains the prototype evaluation framework for coherence code for evaluating the quality of the prototypes.
 
-## ProtoPNet
+### ProtoPNet
 
-## BRAIxProtoPNet++
+### BRAIxProtoPNet++
 
-## PIP-Net
+### PIP-Net
 
-## Prototype Evaluation Framework for Coherence (PEF-Coh)
+### Prototype Evaluation Framework for Coherence (PEF-Coh)
