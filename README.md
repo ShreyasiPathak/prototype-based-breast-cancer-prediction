@@ -31,7 +31,7 @@ We preprocessed the dataset as follows:
 1. Convert the dicom images to png with this [script](data-processing/cmmd/dicom_to_png.py). <br/>
 2. Convert the original png images to preprocessed png images (to remove irrelevant information and remove extra black background) according to our [image cleaning script](data-processing/cmmd/image_cleaning.py). We used these preprocessed images as input to our model.
 
-This folder contains data processing script used for CBIS, VinDr and CMMD. 
+[This folder](data-processing) contains data processing script used for all datasets - CBIS, VinDr and CMMD. 
 
 ## Model Training
 
