@@ -28,8 +28,8 @@ We used 3 public datasets in our work - CBIS, VinDr and CMMD.
 
 We preprocessed the dataset as follows:
 
-1. Convert the dicom images to png with this [script](/src/data_processing/cmmd/dicom_to_png.py). <br/>
-2. Convert the original png images to preprocessed png images (to remove irrelevant information and remove extra black background) according to our [image cleaning script](/src/data_processing/cmmd/image_cleaning.py). We used these preprocessed images as input to our model.
+1. Convert the dicom images to png with this [script](data_processing/cmmd/dicom_to_png.py). <br/>
+2. Convert the original png images to preprocessed png images (to remove irrelevant information and remove extra black background) according to our [image cleaning script](data_processing/cmmd/image_cleaning.py). We used these preprocessed images as input to our model.
 
 ## Model Training
 
