@@ -37,7 +37,16 @@ We preprocessed the dataset as follows:
 
 ### ProtoPNet
 
-Train ProtoPNet model on breast cancer 
+Train ProtoPNet model on breast cancer:
+> python main.py
+Optionally, arguments can be passed to main.py
+-gpuid, -disable_cuda, -start_epoch to resume training from a certain epoch, -best_score is the last best score before resuming training, needed for model checkpoint
+
+Local explanations. Visualize top-k prototypes with similarity*weight score per image. 
+> python local_analysis.py
+
+Global explanations. Visualize top-k activated patches from the training set per prototype.
+> python global_analysis_new.py
 
 ### BRAIxProtoPNet++
 
