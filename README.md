@@ -39,7 +39,8 @@ We preprocessed the dataset as follows:
 
 Train ProtoPNet model on breast cancer:
 > python main.py
-Optionally, arguments can be passed to main.py
+
+Optionally, arguments can be passed to main.py <br/>
 -gpuid, -disable_cuda, -start_epoch to resume training from a certain epoch, -best_score is the last best score before resuming training, needed for model checkpoint
 
 Local explanations. Visualize top-k prototypes with similarity*weight score per image. 
