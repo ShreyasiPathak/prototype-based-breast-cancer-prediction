@@ -33,6 +33,10 @@ We preprocessed the dataset as follows:
 
 [This folder](data-processing) contains data processing script used for all datasets - CBIS, VinDr and CMMD. 
 
+### Preparation of Input csv files
+
+Sample of the input csv file containing details about each instance in the dataset. Sample csv files can be found here.
+
 ## Model Training
 
 ### ProtoPNet
