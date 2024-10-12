@@ -1,0 +1,17 @@
+Patient_Id;Age;Views;Abnormality;ImageLabel;ImageLabelWNormal;Subtype;OriImgPath;ShortPath
+D1-0001;44;RCC;calcification;Benign;Benign;NULL;/deepstore/datasets/dmb/medical/breastcancer/mammography/cmmd/original_png_8bit/D1-0001/1-1.png;D1-0001/RCC_1-1.png
+D1-0001;44;RMLO;calcification;Benign;Benign;NULL;/deepstore/datasets/dmb/medical/breastcancer/mammography/cmmd/original_png_8bit/D1-0001/1-2.png;D1-0001/RMLO_1-2.png
+D1-0002;40;LCC;calcification;Benign;Benign;NULL;/deepstore/datasets/dmb/medical/breastcancer/mammography/cmmd/original_png_8bit/D1-0002/1-1.png;D1-0002/LCC_1-1.png
+D1-0002;40;LMLO;calcification;Benign;Benign;NULL;/deepstore/datasets/dmb/medical/breastcancer/mammography/cmmd/original_png_8bit/D1-0002/1-2.png;D1-0002/LMLO_1-2.png
+D1-0003;39;LCC;calcification;Benign;Benign;NULL;/deepstore/datasets/dmb/medical/breastcancer/mammography/cmmd/original_png_8bit/D1-0003/1-1.png;D1-0003/LCC_1-1.png
+D1-0003;39;LMLO;calcification;Benign;Benign;NULL;/deepstore/datasets/dmb/medical/breastcancer/mammography/cmmd/original_png_8bit/D1-0003/1-2.png;D1-0003/LMLO_1-2.png
+D1-0004;41;LCC;calcification;Benign;Benign;NULL;/deepstore/datasets/dmb/medical/breastcancer/mammography/cmmd/original_png_8bit/D1-0004/1-1.png;D1-0004/LCC_1-1.png
+D1-0004;41;LMLO;calcification;Benign;Benign;NULL;/deepstore/datasets/dmb/medical/breastcancer/mammography/cmmd/original_png_8bit/D1-0004/1-2.png;D1-0004/LMLO_1-2.png
+D2-0748;29;LCC;NULL;Benign;Normal;Luminal B;/deepstore/datasets/dmb/medical/breastcancer/mammography/cmmd/original_png_8bit/D2-0748/1-1.png;D2-0748/LCC_1-1.png
+D2-0748;29;LMLO;NULL;Benign;Normal;Luminal B;/deepstore/datasets/dmb/medical/breastcancer/mammography/cmmd/original_png_8bit/D2-0748/1-2.png;D2-0748/LMLO_1-2.png
+D2-0748;29;RCC;mass;Malignant;Malignant;Luminal B;/deepstore/datasets/dmb/medical/breastcancer/mammography/cmmd/original_png_8bit/D2-0748/1-3.png;D2-0748/RCC_1-3.png
+D2-0748;29;RMLO;mass;Malignant;Malignant;Luminal B;/deepstore/datasets/dmb/medical/breastcancer/mammography/cmmd/original_png_8bit/D2-0748/1-4.png;D2-0748/RMLO_1-4.png
+D2-0749;42;LCC;mass;Malignant;Malignant;Luminal B;/deepstore/datasets/dmb/medical/breastcancer/mammography/cmmd/original_png_8bit/D2-0749/1-1.png;D2-0749/LCC_1-1.png
+D2-0749;42;LMLO;mass;Malignant;Malignant;Luminal B;/deepstore/datasets/dmb/medical/breastcancer/mammography/cmmd/original_png_8bit/D2-0749/1-2.png;D2-0749/LMLO_1-2.png
+D2-0749;42;RCC;NULL;Benign;Normal;Luminal B;/deepstore/datasets/dmb/medical/breastcancer/mammography/cmmd/original_png_8bit/D2-0749/1-3.png;D2-0749/RCC_1-3.png
+D2-0749;42;RMLO;NULL;Benign;Normal;Luminal B;/deepstore/datasets/dmb/medical/breastcancer/mammography/cmmd/original_png_8bit/D2-0749/1-4.png;D2-0749/RMLO_1-4.png

@@ -1,0 +1,8 @@
+ImageName;Patient_Id;BreastDensity;Views;AbnormalityType;Assessment;ImageLabel;AssessmentMax;CaseLabel;ShortPath
+Mass-Training_P_00001_LEFT_MLO_1-1;P_00001;3;LMLO;mass;4;malignant;4;malignant;Mass-Training_P_00001/LMLO_Mass-Training_P_00001_1-1/Mass-Training_P_00001_LEFT_MLO_1-1.png
+Mass-Training_P_00001_LEFT_CC_1-1;P_00001;3;LCC;mass;4;malignant;4;malignant;Mass-Training_P_00001/LCC_Mass-Training_P_00001_1-1/Mass-Training_P_00001_LEFT_CC_1-1.png
+Mass-Training_P_00004_LEFT_MLO_1-1;P_00004;3;LMLO;mass;4;benign;4;benign;Mass-Training_P_00004/LMLO_Mass-Training_P_00004_1-1/Mass-Training_P_00004_LEFT_MLO_1-1.png
+Mass-Training_P_00004_LEFT_CC_1-1;P_00004;3;LCC;mass;4;benign;4;benign;Mass-Training_P_00004/LCC_Mass-Training_P_00004_1-1/Mass-Training_P_00004_LEFT_CC_1-1.png
+Mass-Training_P_00004_RIGHT_MLO_1-1;P_00004;3;RMLO;mass;4;benign;4;benign;Mass-Training_P_00004/RMLO_Mass-Training_P_00004_1-1/Mass-Training_P_00004_RIGHT_MLO_1-1.png
+Calc-Training_P_00005_RIGHT_CC_1-1;P_00005;3;RCC;calcification;3;malignant;3;malignant;Calc-Training_P_00005/RCC_Calc-Training_P_00005_1-1/Calc-Training_P_00005_RIGHT_CC_1-1.png
+Calc-Training_P_00005_RIGHT_MLO_1-1;P_00005;3;RMLO;calcification;3;malignant;3;malignant;Calc-Training_P_00005/RMLO_Calc-Training_P_00005_1-1/Calc-Training_P_00005_RIGHT_MLO_1-1.png
