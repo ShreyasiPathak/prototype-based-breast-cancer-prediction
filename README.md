@@ -38,7 +38,7 @@ We preprocessed the dataset as follows:
 Sample of the input csv file containing details about each instance in the dataset can be found [here](sample-input-csv-file).
 Input csv files for CMMD can be created using our script [here](data-processing/cmmd/utilities.py). 
 
-## Model Training
+## Model Training and Global and Local Explanation
 
 ### ProtoPNet
 
@@ -60,4 +60,4 @@ Global explanations. Visualize top-k activated patches from the training set per
 
 ### Black-box models
 
-### Prototype Evaluation Framework for Coherence (PEF-Coh)
+## Prototype Evaluation Framework for Coherence (PEF-Coh)
