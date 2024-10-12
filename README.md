@@ -35,8 +35,8 @@ We preprocessed the dataset as follows:
 
 ### Preparation of Input csv files
 
-Sample of the input csv file containing details about each instance in the dataset can be found [here](sample-input-csv-files).
-Input csv files for CMMD can be created using our script [here](). 
+Sample of the input csv file containing details about each instance in the dataset can be found [here](sample-input-csv-file).
+Input csv files for CMMD can be created using our script [here](data-processing/cmmd/utilities.py). 
 
 ## Model Training
 
