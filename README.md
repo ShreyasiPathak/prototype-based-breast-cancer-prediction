@@ -28,14 +28,31 @@ We used 3 public datasets in our work - CBIS, VinDr and CMMD.
 
 We preprocessed the dataset as follows:
 
-1. Convert the dicom images to png with this [script](/src/data_processing/dicom_to_png.py). <br/>
-2. Convert the original png images to preprocessed png images (to remove irrelevant information and remove extra black background) according to our [image cleaning script](/src/data_processing/image_cleaning.py). Example of the results of our image preprocessing algorithm can be found [here](/image-preprocessing). We used these preprocessed images as input to our model.
+1. Convert the dicom images to png with this [script](data-processing/cmmd/dicom_to_png.py). <br/>
+2. Convert the original png images to preprocessed png images (to remove irrelevant information and remove extra black background) according to our [image cleaning script](data-processing/cmmd/image_cleaning.py). We used these preprocessed images as input to our model.
+
+[This folder](data-processing) contains data processing script used for all datasets - CBIS, VinDr and CMMD. 
+
+### Preparation of Input csv files
+
+Sample of the input csv file containing details about each instance in the dataset can be found [here](sample-input-csv-files).
+Input csv files for CMMD can be created using our script [here](). 
 
 ## Model Training
 
 ### ProtoPNet
 
-Train ProtoPNet model on breast cancer 
+Train ProtoPNet model on breast cancer:
+> python main.py
+
+Optionally, arguments can be passed to main.py <br/>
+-gpuid, -disable_cuda, -start_epoch to resume training from a certain epoch, -best_score is the last best score before resuming training, needed for model checkpoint
+
+Local explanations. Visualize top-k prototypes with similarity*weight score per image. 
+> python local_analysis.py
+
+Global explanations. Visualize top-k activated patches from the training set per prototype.
+> python global_analysis_new.py
 
 ### BRAIxProtoPNet++
 
