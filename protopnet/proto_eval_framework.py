@@ -8,6 +8,7 @@ import torchvision.transforms as transforms
 import pandas as pd
 import cv2
 import csv
+import matplotlib.pyplot as plt 
 
 # book keeping namings and code
 import model 
@@ -120,7 +121,10 @@ def map_region_to_fixed_patch_size(bounding_box, patch_size):
     h_min_224, h_max_224, w_min_224, w_max_224 = int(h_min_224), int(h_max_224), int(w_min_224), int(w_max_224)
     return h_min_224, h_max_224, w_min_224, w_max_224
 
-def class_specific_score(args, prototype_purity_file, dataset_category_file):
+def class_specific_score(args):
+    prototype_purity_file = '/home/pathaks/PhD/prototype-model-evaluation/prototype_eval_framwork/protopnet_cbis_8_8_prototypeevalframe_res.csv' #created from the function eval_prototypes_purity() in this code
+    dataset_category_file = '/home/pathaks/PhD/prototype-model-evaluation/prototype_eval_framwork/cbisddsm_abnormalitygroup_malignant_benign_count.csv' #created using the code in data-processing/cbis/abnormalitytype_diagnosis.py
+    
     purity_file = pd.read_csv(prototype_purity_file, sep = ';')
     dataset_category_file = pd.read_csv(dataset_category_file, sep = ';')
     
@@ -159,11 +163,121 @@ def class_specific_score(args, prototype_purity_file, dataset_category_file):
     
     print("match count average:", match_count/purity_file.shape[0], flush=True)
 
+def class_specific_score_dataset_cldist_plot(args):
+    prototype_purity_file = '/home/pathaks/PhD/prototype-model-evaluation/prototype_eval_framwork/protopnet_cbis_8_8_prototypeevalframe_res.csv' #created from the function eval_prototypes_purity() in this code 
+    dataset_category_file = '/home/pathaks/PhD/prototype-model-evaluation/prototype_eval_framwork/cbisddsm_abnormalitygroup_malignant_benign_count.csv' #created using the code in data-processing/cbis/abnormalitytype_diagnosis.py
+
+    purity_file = pd.read_csv(prototype_purity_file, sep = ';')
+    dataset_category_file = pd.read_csv(dataset_category_file, sep = ';')
+
+    # construct the model
+    ppnet = model.construct_PPNet(base_architecture=base_architecture,
+                                pretrained=True, img_size=img_size,
+                                prototype_shape=prototype_shape,
+                                num_classes=num_classes,
+                                prototype_activation_function=prototype_activation_function,
+                                add_on_layers_type=add_on_layers_type)
+    
+    ppnet = torch.nn.DataParallel(ppnet)
+    ppnet = load_model(ppnet, args.state_dict_dir_net)
+    ppnet = ppnet.to('cuda')#cuda()
+    match_count = 0
+    category_dic = {}
+    for i in range(0, purity_file.shape[0]):
+        protoid = purity_file.loc[i, 'ProtoId']
+        protoname = purity_file.loc[i, 'AbnormalityType'] + '-' + purity_file.loc[i, 'MassShape/CalcMorph'] + '-' + purity_file.loc[i, 'MassMargin/CalcDist']
+        print("protoname:", protoname, flush=True)
+        wt_benign = ppnet.module.last_layer.weight[0, protoid].item()
+        wt_malign = ppnet.module.last_layer.weight[1, protoid].item()
+        dataset_category_row = dataset_category_file[dataset_category_file['Category']==protoname]
+        print("dataset row:", dataset_category_row, flush=True)
+        print("wt benign:", wt_benign, flush=True)
+        print("wt malign:", wt_malign, flush=True)
+        if not dataset_category_row.empty:
+            print("dataset benign:", dataset_category_row['Benign'].item(), flush=True)
+            print("dataset malignant:", dataset_category_row['Malignant'].item(), flush=True)
+            
+            if protoname not in category_dic.keys():
+                category_dic[protoname] = [dataset_category_row['Benign'].item()/(dataset_category_row['Benign'].item()+dataset_category_row['Malignant'].item()), dataset_category_row['Malignant'].item()/(dataset_category_row['Benign'].item()+dataset_category_row['Malignant'].item()), 0, 0]
+                #category_dic[protoname] = [dataset_category_row['Benign'].item(), dataset_category_row['Malignant'].item(), 0, 0]
+                #category_dic[protoname] = [dataset_category_row['Malignant'].item()/dataset_category_row['Benign'].item(), 0, 0]
+
+            if (wt_benign > wt_malign):
+                category_dic[protoname][2]+=1
+                #wt_div = wt_malign/wt_benign
+                #if wt_div<0:
+                #    wt_div_assign = wt_div
+                #elif wt_div>0:
+                #    wt_div_assign = -wt_div
+            
+            elif (wt_benign < wt_malign):
+                category_dic[protoname][3]+=1
+                #wt_div = wt_malign/wt_benign
+                #if wt_div<0:
+                #    wt_div_assign = -wt_div
+                #elif wt_div>0:
+                #    wt_div_assign = wt_div
+            
+            #category_dic[protoname].append(wt_div_assign)
+            
+            print("dataset row:", dataset_category_row, flush=True)
+            print("model weight row:", i, protoid, protoname, wt_benign, wt_malign, flush=True)
+            #print("match count:", match_count, flush=True)
+    
+    print("category dic:", category_dic)
+    
+    barWidth = 0.18
+    fig, ax = plt.subplots(figsize =(20, 15)) 
+
+    #ax.set_yscale('log')
+    # set height of bar 
+    y_malignant = []
+    y_benign = []
+    true_benign = []
+    true_malignant = []
+    for key in category_dic.keys():
+        true_benign.append(category_dic[key][0])
+        true_malignant.append(category_dic[key][1])
+        y_benign.append(category_dic[key][2]/(category_dic[key][2]+category_dic[key][3]))
+        y_malignant.append(category_dic[key][3]/(category_dic[key][2]+category_dic[key][3]))
+
+    # Set position of bar on X axis 
+    br1 = np.arange(len(y_malignant)) 
+    br2 = np.array([x + barWidth for x in br1]) 
+    br3 = np.array([x + barWidth for x in br2]) 
+    br4 = np.array([x + barWidth for x in br3])
+
+    ax.bar(br1, true_benign, color ='cornflowerblue', width = barWidth, label ='benign instances (CBIS)')
+    ax.bar(br2, true_malignant, color ='crimson', width = barWidth, label ='malignant instances (CBIS)')#, bottom=true_benign) #edgecolor ='grey',
+    ax.bar(br3, y_benign, color ='lightskyblue', width = barWidth, label ='#wt-b>wt-m prototypes') 
+    ax.bar(br4, y_malignant, color ='lightsalmon', width = barWidth, label ='#wt-b<wt-m prototypes') 
+
+    # Adding Xticks 
+    plt.xlabel('Categories', fontweight ='bold', fontsize = 15) 
+    plt.ylabel('Count', fontweight ='bold', fontsize = 15) 
+    print(len(category_dic.keys()))
+    print(len(br1))
+    print(br1+barWidth)
+    print(list(category_dic.keys()))
+    #xlabels = ['ARCHDIS-SPICULATED', 'IRREGULAR-ILLDEFINED', 'IRREGULAR-SPICULATED', 'IRREGULAR-ARCHDIS-SPICULATED', 'LOBULATED-CIRCUMSCRIBED', 'LOBULATED-ILLDEFINED', 'LOBULATED-MICROLOBULATED', 'LOBULATED-OBSCURED', 'OVAL-CIRCUMSCRIBED', 'OVAL-ILLDEFINED', 'OVAL-MICROLOBULATED', 'OVAL-OBSCURED', 'OVAL-SPICULATED', 'ROUND-CIRCUMSCRIBED', 'ROUND-ILLDEFINED', 'ROUND-OBSCURED', 'ROUND-SPICULATED']
+    #xlabels = ['AMORPHOUS-CLUSTERED', 'AMORPHOUS-SEGMENTAL', 'FINELINEARBRANCH-CLUSTERED', 'FINELINEARBRANCH-LINEAR', 'PLEOMORPHIC-CLUSTERED', 'PLEOMORPHIC-LINEAR', 'PLEOMORPHIC-REGIONAL', 'PLEOMORPHIC-SEGMENTAL', 'PUNCTATE-CLUSTERED', 'PUNCTATE-SEGMENTAL', 'PUNCTATE-PLEOMORPHIC-CLUSTERED']
+    xlabels = list(category_dic.keys())
+    ax.set_xticks(br1+(barWidth), xlabels, rotation = 35, ha='right', rotation_mode='anchor')
+    
+    #plt.ylim(0,2)
+    plt.legend()
+    #plt.show() 
+
+    fig.savefig("./category_truedata_benign_malign_wt"+'.pdf', format='pdf', bbox_inches='tight')
+
+    #print("match count average:", match_count/purity_file.shape[0], flush=True)
+
 # Evaluates purity of CUB prototypes from csv file. General method that can be used for other part-prototype methods as well
 # Assumes that coordinates in csv file apply to a 224x224 image!
 def eval_prototypes_purity(args):
     df_roi = pd.read_csv(os.path.join('/deepstore/datasets/dmb/medical/breastcancer/mammography/cbis-ddsm/','cbis_roi_details_bounding_box.csv'), sep=';')
     print("df_roi:", df_roi, flush=True)
+    proto_parts_presences_roi = dict()
     proto_parts_presences_abnormalitytype = dict()
     proto_parts_presences_massshape = dict()
     proto_parts_presences_massmargin = dict()
@@ -216,6 +330,11 @@ def eval_prototypes_purity(args):
                     if x_center >= w_min_224 and x_center <= w_max_224:
                         part_in_patch = 1
                         break
+            
+            if type(roi['AbnormalityType']) != float:
+                if 'ROI' not in proto_parts_presences_roi[p].keys():
+                    proto_parts_presences_roi[p]['ROI']=[]
+                proto_parts_presences_roi[p]['ROI'].append(part_in_patch)
 
             if type(roi['AbnormalityType']) != float:
                 if roi['AbnormalityType'] not in proto_parts_presences_abnormalitytype[p].keys():
@@ -241,7 +360,11 @@ def eval_prototypes_purity(args):
                 if roi['CalcDistribution'] not in proto_parts_presences_calcdistribution[p].keys():
                     proto_parts_presences_calcdistribution[p][roi['CalcDistribution']]=[]
                 proto_parts_presences_calcdistribution[p][roi['CalcDistribution']].append(part_in_patch)
-                      
+            
+
+    print("Number of prototypes in parts_presences abnormality type: ", len(proto_parts_presences_roi.keys()), flush=True)
+    print("Proto parts presence abnormality type:", proto_parts_presences_roi, flush=True)
+
     print("Number of prototypes in parts_presences abnormality type: ", len(proto_parts_presences_abnormalitytype.keys()), flush=True)
     print("Proto parts presence abnormality type:", proto_parts_presences_abnormalitytype, flush=True)
     
@@ -256,7 +379,28 @@ def eval_prototypes_purity(args):
 
     print("Number of prototypes in parts_presences abnormality type: ", len(proto_parts_presences_calcdistribution.keys()), flush=True)
     print("Proto parts presence abnormality type:", proto_parts_presences_calcdistribution, flush=True)
+    
+    
+    max_presence_purity_roi = dict()
+    part_most_present_roi = dict()
+    for proto in proto_parts_presences_roi.keys():
+        max_presence_purity_roi[proto]= 0.
+        part_most_present_roi[proto] = ('0',0)
+        total_entry_roi = 0.
+        part_score_roi = {}
+        for part in proto_parts_presences_roi[proto].keys():
+            #presence_purity = np.mean(proto_parts_presences_abnormalitytype[proto][part])
+            part_score_roi[part] = np.array(proto_parts_presences_roi[proto][part]).sum()
+            total_entry_roi+= np.array(proto_parts_presences_roi[proto][part]).shape[0]
+        for part in proto_parts_presences_roi[proto].keys():
+            part_score_roi[part] = part_score_roi[part]/total_entry_roi
+            if part_score_roi[part] > max_presence_purity_roi[proto]:
+                max_presence_purity_roi[proto] = part_score_roi[part]
+                part_most_present_roi[proto] = (part, part_score_roi[part])
 
+        #print("part score:", proto, part_score, flush= True)
+    print("purity all proto abnormality type:", part_most_present_roi, flush= True)
+    
     max_presence_purity = dict()
     part_most_present = dict()
     for proto in proto_parts_presences_abnormalitytype.keys():
@@ -353,7 +497,7 @@ def eval_prototypes_purity(args):
         #print("part score:", proto, part_score_calcdistribution, flush= True)
     #(name of the prototype, purity score)
     print("purity all proto calc distribution:", part_most_present_calcdistribution, flush= True)
-
+    
     part_proto_present_all_granularity = dict()
     massshape = 0
     massmargin = 0
@@ -363,7 +507,13 @@ def eval_prototypes_purity(args):
     totalmass = 0
     totalcalc = 0
     description = []
-    for proto in proto_parts_presences_abnormalitytype.keys():
+    
+    roitype = 0
+    for proto in proto_parts_presences_roi.keys():
+        roitype+= part_most_present_roi[proto][1]
+    print("roi value:", roitype/len(proto_parts_presences_roi))
+
+    '''for proto in proto_parts_presences_abnormalitytype.keys():
         if part_most_present[proto][0] == 'mass':
             part_proto_present_all_granularity[proto] = [part_most_present[proto][0], part_most_present[proto][1], part_most_present_massshape[proto][0], part_most_present_massshape[proto][1], part_most_present_massmargin[proto][0], part_most_present_massmargin[proto][1]]
             massshape+=part_most_present_massshape[proto][1]
@@ -379,13 +529,14 @@ def eval_prototypes_purity(args):
             totalcalc+=1
 
         abnormtype+=part_most_present[proto][1] 
-    
-    df_part_proto_present_all_granularity= pd.DataFrame.from_dict(part_proto_present_all_granularity, orient='index', columns=['AbnormalityType', 'PurityScore', 'MassShape/CalcMorph', 'PurityScore', 'MassMargin/CalcDist', 'PurityScore'])
+    '''
+    '''df_part_proto_present_all_granularity= pd.DataFrame.from_dict(part_proto_present_all_granularity, orient='index', columns=['AbnormalityType', 'PurityScore', 'MassShape/CalcMorph', 'PurityScore', 'MassMargin/CalcDist', 'PurityScore'])
     df_part_proto_present_all_granularity.to_csv('./protopnet_cbis_8_8_prototypeevalframe_res.csv', sep=';',na_rep='NULL',index=True)
     print("part proto all granularity:", part_proto_present_all_granularity, flush=True)
     print("relevance:", len(part_proto_present_all_granularity.keys()))
     print("all values for purity:", abnormtype/(totalmass+totalcalc), massshape/totalmass, massmargin/totalmass, calcmorph/totalcalc, calcdist/totalcalc, flush=True)
     print("uniqueness:", np.unique(np.array(description)).shape)
+    '''
     #print("Number of part-related prototypes (purity>0.5): ", prototypes_part_related, flush=True)
 
     #print("Mean purity of prototypes (corresponding to purest part): ", np.mean(list(max_presence_purity.values())), "std: ", np.std(list(max_presence_purity.values())), flush=True)
@@ -409,8 +560,15 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    #read_roi_file(args)
-    #eval_prototypes_purity(args)
-    prototype_purity_file = '/home/pathaks/prototype_eval_framwork/protopnet_cbis_80_8_prototypeevalframe_res.csv'
-    dataset_category_file = '/home/pathaks/prototype_eval_framwork/cbisddsm_abnormalitygroup_malignant_benign_count.csv'
-    class_specific_score(args, prototype_purity_file, dataset_category_file)
+    #create the cbis_roi_details_bounding_box.csv
+    if not os.path.exists('/deepstore/datasets/dmb/medical/breastcancer/mammography/cbis-ddsm/cbis_roi_details_bounding_box.csv'):
+        read_roi_file(args)
+
+    #calculate metrics relevance, specialization, uniqueness, coverage
+    eval_prototypes_purity(args)
+
+    #calculate metrics class-specific score
+    class_specific_score(args)
+    
+    #plot the classification layer weight vs the class distribution in the dataset for the abnormality category
+    class_specific_score_dataset_cldist_plot(args)
