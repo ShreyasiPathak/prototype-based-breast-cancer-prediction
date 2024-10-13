@@ -90,3 +90,4 @@ The file generated from the above script is needed for running the script below.
 4. Calculate localization measure
 > python main.py -mode localization
 
+Similar process can be followed for [BRAIxProtoPNet++](braixprotopnet/proto_eval_framework.py) and [PIP-Net](pipnet/src/util/proto_eval_framework.py).
