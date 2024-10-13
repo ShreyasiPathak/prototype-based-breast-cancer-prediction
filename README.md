@@ -80,6 +80,7 @@ Global explanations. Visualize top-k activated patches from the training set per
 
 ### PIP-Net
 
+Train PIP-Net on breast cancer prediction
 > python3 main.py --net convnext_tiny_13 --optimizer Adam --randseedother 8 --randseeddata 8 --epochs_pretrain 10 --batch_size 6 --freeze_epochs 0 --epochs 60 --num_workers 8 --dataset cmmd --lr_net 0.00001 --lr 0.05 --lr_block 0.00001 --batch_size_pretrain 30 --log_dir ./runs/modelid12_cmmd_ct13_10_60_.05_0.0001_bs6_bsp30_clwt3 --weighted_loss --image_size 1536 768 --datasplit customsplit --SIL_csvfilepath /deepstore/datasets/dmb/medical/breastcancer/mammography/cmmd/cmmd_singleinstance_groundtruth.csv --preprocessed_imagepath /deepstore/datasets/dmb/medical/breastcancer/mammography/cmmd/processed_png_8bit --numclasses 2 --modelid 12 --classtype diagnosis --usevalidation --align_pf_weight 5 --tanhloss_weight 2 --classloss_weight 2
 
 
