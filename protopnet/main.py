@@ -418,10 +418,9 @@ if args.mode == 'localization':
         get_images(ppnet, test_loader, df_test, device, args, 'IOU')
         get_images(ppnet, test_loader, df_test, device, args, 'DSC')
     
-
-'''end_time = datetime.datetime.now()
+end_time = datetime.datetime.now()
 log("Start time: {0}".format(str(begin_time)))
 log("End time: {0}".format(str(end_time)))
 log("Execution time: {0}".format(str(end_time - begin_time)))
-'''
+
 logclose()
