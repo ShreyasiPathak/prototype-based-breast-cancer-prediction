@@ -46,10 +46,10 @@ Train ProtoPNet model on breast cancer:
 > python main.py
 
 Optionally, arguments can be passed to main.py <br/>
--gpuid (gpu id)
--disable_cuda (disable cuda training) 
--start_epoch to resume training from a certain epoch, 
--best_score is the last best score before resuming training, needed for model checkpoint
+-gpuid (gpu id), <br/>
+-disable_cuda (disable cuda training) <br/>
+-start_epoch to resume training from a certain epoch <br/>
+-best_score is the last best score before resuming training, needed for model checkpoint <br/>
 -mode: train or localization. Localization is used for localization measure calculation.
 
 In protopnet/settings.py, you can add the settings for training the model.
