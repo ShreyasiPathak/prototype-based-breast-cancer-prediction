@@ -114,5 +114,11 @@ The file generated from the above script is needed for running the script below.
 For calculating the measures in PEF-Coh for PIP-Net, follow:
 
 1. Generate pipnet_cbis_topk.csv contains the location of the top-k image patches from the training set that got activated for a prototype. This is generated during model training with call to main.py.
+
 2. Same as with protopnet and braixprotopnet++.
+
+3. Calculate relevance, specialization, uniqueness, coverage and class-specific measures.
 > python pipnet/src/util/proto_eval_framework.py --dataset cbis-ddsm --patch_size 130 130 --state_dict_dir_net /home/pathaks/pipnet1/src/runs/modelid4_cbis_ct13_10_60_.05_0.00001_bs6_bsp30/checkpoints/net_trained_best_80_8 --net convnext_tiny_13 --patch_proto_csv /home/pathaks/PhD/prototype-model-evaluation/pipnet1/src/runs/modelid4_cbis_ct13_10_60_.05_0.00001_bs6_bsp30/visualised_prototypes_topk_8_8/pipnet_cbis_topk.csv --image_size 1536 768
+
+4. Calculate localization measure: already calculated during model training with call to main.py
+
