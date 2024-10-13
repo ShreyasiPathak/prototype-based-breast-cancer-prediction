@@ -118,7 +118,10 @@ def map_region_to_fixed_patch_size(bounding_box, patch_size):
     h_min_224, h_max_224, w_min_224, w_max_224 = int(h_min_224), int(h_max_224), int(w_min_224), int(w_max_224)
     return h_min_224, h_max_224, w_min_224, w_max_224
 
-def class_specific_score(args, prototype_purity_file, dataset_category_file):
+def class_specific_score(args):
+    prototype_purity_file = '/home/pathaks/prototype_eval_framwork/pipnet_cbis_80_8_prototypeevalframe_res.csv'
+    dataset_category_file = '/home/pathaks/prototype_eval_framwork/cbisddsm_abnormalitygroup_malignant_benign_count.csv'
+
     purity_file = pd.read_csv(prototype_purity_file, sep = ';')
     dataset_category_file = pd.read_csv(dataset_category_file, sep = ';')
     
@@ -429,8 +432,12 @@ if __name__ == '__main__':
                         
     args = parser.parse_args()
 
-    #read_roi_file(args)
-    #eval_prototypes_purity(args)
-    prototype_purity_file = '/home/pathaks/prototype_eval_framwork/pipnet_cbis_80_8_prototypeevalframe_res.csv'
-    dataset_category_file = '/home/pathaks/prototype_eval_framwork/cbisddsm_abnormalitygroup_malignant_benign_count.csv'
-    class_specific_score(args, prototype_purity_file, dataset_category_file)
+    #create the cbis_roi_details_bounding_box.csv
+    if not os.path.exists('/deepstore/datasets/dmb/medical/breastcancer/mammography/cbis-ddsm/cbis_roi_details_bounding_box.csv'):
+        read_roi_file(args)
+    
+    #calculate metrics relevance, specialization, uniqueness, coverage
+    eval_prototypes_purity(args)
+    
+    #calculate metrics class-specific score
+    class_specific_score(args)
