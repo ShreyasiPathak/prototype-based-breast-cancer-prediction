@@ -52,6 +52,8 @@ Optionally, arguments can be passed to main.py <br/>
 -best_score is the last best score before resuming training, needed for model checkpoint
 -mode: train or localization. Localization is used for localization measure calculation.
 
+In protopnet/settings.py, you can add the settings for training the model.
+
 Local explanations. Visualize top-k prototypes with similarity*weight score per image. 
 > python local_analysis.py
 
