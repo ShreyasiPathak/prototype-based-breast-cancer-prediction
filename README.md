@@ -50,19 +50,40 @@ Optionally, arguments can be passed to main.py <br/>
 -disable_cuda (disable cuda training) <br/>
 -start_epoch to resume training from a certain epoch <br/>
 -best_score is the last best score before resuming training, needed for model checkpoint <br/>
--mode: train or localization. Localization is used for localization measure calculation.
+-mode: train or localization. Localization is used for calculation of localization measure.
 
 In protopnet/settings.py, you can add the settings for training the model.
 
 Local explanations. Visualize top-k prototypes with similarity*weight score per image. 
-> python local_analysis.py
+> python protopnet/local_analysis.py
 
 Global explanations. Visualize top-k activated patches from the training set per prototype.
-> python global_analysis_new.py
+> python protopnet/global_analysis_new.py
 
 ### BRAIxProtoPNet++
+Train BRAIxProtoPNet++ model on breast cancer:
+> python main.py
+
+Optionally, arguments can be passed to main.py <br/>
+-gpuid (gpu id), <br/>
+-disable_cuda (disable cuda training) <br/>
+-start_epoch to resume training from a certain epoch <br/>
+-mode: train or localization. Localization is used for calculation of localization measure.
+
+In braixprotopnet/settings.py, you can add the settings for training the model.
+
+Local explanations. Visualize top-k prototypes with similarity*weight score per image. 
+> python braixprotopnet/local_analysis.py
+
+Global explanations. Visualize top-k activated patches from the training set per prototype.
+> python braixprotopnet/global_analysis_new.py
 
 ### PIP-Net
+
+Train PIP-Net on breast cancer prediction
+> python3 main.py --net convnext_tiny_13 --optimizer Adam --randseedother 8 --randseeddata 8 --epochs_pretrain 10 --batch_size 6 --freeze_epochs 0 --epochs 60 --num_workers 8 --dataset cmmd --lr_net 0.00001 --lr 0.05 --lr_block 0.00001 --batch_size_pretrain 30 --log_dir ./runs/modelid12_cmmd_ct13_10_60_.05_0.0001_bs6_bsp30_clwt3 --weighted_loss --image_size 1536 768 --datasplit customsplit --SIL_csvfilepath /deepstore/datasets/dmb/medical/breastcancer/mammography/cmmd/cmmd_singleinstance_groundtruth.csv --preprocessed_imagepath /deepstore/datasets/dmb/medical/breastcancer/mammography/cmmd/processed_png_8bit --numclasses 2 --modelid 12 --classtype diagnosis --usevalidation --align_pf_weight 5 --tanhloss_weight 2 --classloss_weight 2
+
+Global explanation and local explanation both are in main.py. Global explanation is generated automatically after training. For local explanation, uncomment the lines marked for local explanation.
 
 ### Black-box models
 
@@ -71,9 +92,9 @@ To train the black-box models (EfficientNet, ConvNext and GMIC) in the paper, pl
 ## Prototype Evaluation Framework for Coherence (PEF-Coh)
 Prototype evaluation framework script location for [ProtoPNet](protopnet/proto_eval_framework.py), [BRAIxProtoPNet++](braixprotopnet/proto_eval_framework.py) and [PIP-Net](pipnet/src/util/proto_eval_framework.py).
 
-For calculating the measures in PEF-Coh for ProtoPNet, follow:
+For calculating the measures in PEF-Coh for ProtoPNet and BRAIxProtoPNet++, follow:
 
-1. Generate protopnet_cbis_topk.csv, which is generated during global explanation generation
+1. Generate protopnet_cbis_topk.csv, which is generated during global explanation generation. It contains the location of the top-k image patches from the training set that got activated for a prototype.
 > python global_analysis_new.py
 
 2. Generate class distribution of each abnormality type if this information is available in the dataset (available for cbis). This is needed for the class-specific measure.
@@ -85,9 +106,19 @@ The file generated from the above script is needed for running the script below.
 > python data-processing/cbis/abnormalitytype_diagnosis.py
 
 3. Calculate relevance, specialization, uniqueness, coverage and class-specific measures.
-> python protopnet/proto_eval_framework.py --dataset cbis-ddsm --patch_size 130 130 --patch_proto_csv /home/pathaks/PhD/prototype-model-evaluation/protopnet/saved_models/cbis-ddsm/convnext_tiny_13/019/net_trained_best_8_8_nearest_train_protopnet/protopnet_cbis_topk.csv --image_size 1536 768
+> python protopnet/proto_eval_framework.py --dataset cbis-ddsm --patch_size 130 130 --state_dict_dir_net /home/pathaks/PhD/prototype-model-evaluation/protopnet/saved_models/cbis-ddsm/convnext_tiny_13/019/net_trained_best_8_8 --patch_proto_csv /home/pathaks/PhD/prototype-model-evaluation/protopnet/saved_models/cbis-ddsm/convnext_tiny_13/019/net_trained_best_8_8_nearest_train_protopnet/protopnet_cbis_topk.csv --image_size 1536 768
 
 4. Calculate localization measure
 > python main.py -mode localization
 
-Similar process can be followed for [BRAIxProtoPNet++](braixprotopnet/proto_eval_framework.py) and [PIP-Net](pipnet/src/util/proto_eval_framework.py).
+For calculating the measures in PEF-Coh for PIP-Net, follow:
+
+1. Generate pipnet_cbis_topk.csv contains the location of the top-k image patches from the training set that got activated for a prototype. This is generated during model training with call to main.py.
+
+2. Same as with protopnet and braixprotopnet++.
+
+3. Calculate relevance, specialization, uniqueness, coverage and class-specific measures.
+> python pipnet/src/util/proto_eval_framework.py --dataset cbis-ddsm --patch_size 130 130 --state_dict_dir_net /home/pathaks/pipnet1/src/runs/modelid4_cbis_ct13_10_60_.05_0.00001_bs6_bsp30/checkpoints/net_trained_best_80_8 --net convnext_tiny_13 --patch_proto_csv /home/pathaks/PhD/prototype-model-evaluation/pipnet1/src/runs/modelid4_cbis_ct13_10_60_.05_0.00001_bs6_bsp30/visualised_prototypes_topk_8_8/pipnet_cbis_topk.csv --image_size 1536 768
+
+4. Calculate localization measure: already calculated during model training with call to main.py
+
