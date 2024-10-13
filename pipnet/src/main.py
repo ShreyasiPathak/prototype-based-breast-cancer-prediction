@@ -386,8 +386,8 @@ def run_pipnet(args=None):
     #net = full_training_phase(args, log, net, dataloader_train, dataloader_val, dataloader_test, criterion, start_epoch_finetune)
     #eval_info = eval_pipnet(args, net, dataloader_test, 'test', device, criterion, 'test', args.tanhloss_weight, args.classloss_weight, log)
 
-    #visualizing top k prototypes after full training phase
-    '''topks = visualize_topk(net, dataloader_train_projectloader, df_train, args.numclasses, device, 'visualised_prototypes_topk'+'_'+str(args.randseedother)+'_'+str(args.randseeddata), args)
+    #Global explanation. Visualizing top k prototypes after full training phase
+    topks = visualize_topk(net, dataloader_train_projectloader, df_train, args.numclasses, device, 'visualised_prototypes_topk'+'_'+str(args.randseedother)+'_'+str(args.randseeddata), args)
     
     # set weights of prototypes that are never really found in projection set to 0
     set_to_zero = []
@@ -403,7 +403,7 @@ def run_pipnet(args=None):
         print("Weights of prototypes", set_to_zero, "are set to zero because it is never detected with similarity>0.1 in the training set", flush=True)
         eval_info = eval_pipnet(args, net, dataloader_test, "notused0", device, criterion, 'test', args.tanhloss_weight, args.classloss_weight, log)
         log.log_values('log_epoch_overview'+'_'+str(args.randseedother)+'_'+str(args.randseeddata), "notused0", eval_info['top1_accuracy'], eval_info['top5_accuracy'], eval_info['almost_sim_nonzeros'], eval_info['local_size_all_classes'], eval_info['almost_nonzeros'], eval_info['num non-zero prototypes'], "n.a.", "n.a.")
-    '''
+    
     '''print("classifier weights: ", net.module._classification.weight, flush=True)
     print("Classifier weights nonzero: ", net.module._classification.weight[net.module._classification.weight.nonzero(as_tuple=True)], (net.module._classification.weight[net.module._classification.weight.nonzero(as_tuple=True)]).shape, flush=True)
     print("Classifier bias: ", net.module._classification.bias, flush=True)
@@ -422,7 +422,7 @@ def run_pipnet(args=None):
     # visualize all prototypes and not just top k predictions 
     #visualize(net, dataloader_train_projectloader, df_train, args.numclasses, device, 'visualised_prototypes', args)
     
-    #visualize the prediction for each instance in test set
+    #Local Explanation. Visualize the prediction for each instance in test set. Uncomment the following lines to generate local explanation.
     #testset_img0_path = dataloader_test_projectloader.dataset.samples[0][0]
     #test_path = os.path.split(os.path.split(testset_img0_path)[0])[0]
     #vis_pred(net, dataloader_test_projectloader, df_test, args.numclasses, device, args) 
