@@ -36,7 +36,7 @@ We preprocessed the dataset as follows:
 ### Preparation of Input csv files
 
 Sample of the input csv file containing details about each instance in the dataset can be found [here](sample-input-csv-file).
-We provide the script for creating the input csv files for CMMD [here](data-processing/cmmd/utilities.py). 
+We provide the script for creating the input csv files for [CMMD](data-processing/cmmd/utilities.py), [CBIS](data-processing/cbis/input_csv_file_creation_cbis.py) and [VinDr](data-processing/vindr/utilities.py).  
 
 ## Model Training and Global and Local Explanation
 
