@@ -35,10 +35,10 @@ We preprocessed the dataset as follows:
 
 ### Preparation of Input csv files
 
-Sample of the input csv file containing details about each instance in the dataset can be found [here](sample-input-csv-files).
-Input csv files for CMMD can be created using our script [here](). 
+Sample of the input csv file containing details about each instance in the dataset can be found [here](sample-input-csv-file).
+Input csv files for CMMD can be created using our script [here](data-processing/cmmd/utilities.py). 
 
-## Model Training
+## Model Training and Global and Local Explanation
 
 ### ProtoPNet
 
@@ -46,7 +46,13 @@ Train ProtoPNet model on breast cancer:
 > python main.py
 
 Optionally, arguments can be passed to main.py <br/>
--gpuid, -disable_cuda, -start_epoch to resume training from a certain epoch, -best_score is the last best score before resuming training, needed for model checkpoint
+-gpuid (gpu id)
+-disable_cuda (disable cuda training) 
+-start_epoch to resume training from a certain epoch, 
+-best_score is the last best score before resuming training, needed for model checkpoint
+-mode: train or localization. Localization is used for localization measure calculation.
+
+In protopnet/settings.py, you can add the settings for training the model.
 
 Local explanations. Visualize top-k prototypes with similarity*weight score per image. 
 > python local_analysis.py
@@ -60,4 +66,22 @@ Global explanations. Visualize top-k activated patches from the training set per
 
 ### Black-box models
 
-### Prototype Evaluation Framework for Coherence (PEF-Coh)
+To train the black-box models (EfficientNet, ConvNext and GMIC) in the paper, please refer to this repository: https://github.com/ShreyasiPathak/multiinstance-learning-mammography
+
+## Prototype Evaluation Framework for Coherence (PEF-Coh)
+Prototype evaluation framework script location for [ProtoPNet](protopnet/proto_eval_framework.py), [BRAIxProtoPNet++](braixprotopnet/proto_eval_framework.py) and [PIP-Net](pipnet/src/util/proto_eval_framework.py).
+
+For calculating the measures in PEF-Coh for ProtoPNet, follow:
+
+1. Generate protopnet_cbis_topk.csv, which is generated during global explanation generation
+> python global_analysis_new.py
+
+2. Generate class distribution of each abnormality type if this information is available in the dataset. This is needed for the class-specific measure. For cbis, this information is available. Running the following line will generate cbisddsm_abnormalitygroup_malignant_benign_count.csv.
+> python data-processing/cbis/abnormalitytype_diagnosis.py
+
+3. Calculate relevance, specialization, uniqueness, coverage and class-specific measures.
+> python protopnet/proto_eval_framework.py --dataset cbis-ddsm --patch_size 130 130 --patch_proto_csv /home/pathaks/PhD/prototype-model-evaluation/protopnet/saved_models/cbis-ddsm/convnext_tiny_13/019/net_trained_best_8_8_nearest_train_protopnet/protopnet_cbis_topk.csv --image_size 1536 768
+
+4. Calculate localization measure
+> python main.py -mode localization
+
