@@ -419,7 +419,5 @@ if __name__ == '__main__':
     #calculate metrics relevance, specialization, uniqueness, coverage
     eval_prototypes_purity(args)
     
-    
-    
     #calculate metrics class-specific score
     class_specific_score(args)
