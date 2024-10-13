@@ -94,7 +94,7 @@ Prototype evaluation framework script location for [ProtoPNet](protopnet/proto_e
 
 For calculating the measures in PEF-Coh for ProtoPNet and BRAIxProtoPNet++, follow:
 
-1. Generate protopnet_cbis_topk.csv, which is generated during global explanation generation
+1. Generate protopnet_cbis_topk.csv, which is generated during global explanation generation. It contains the location of the top-k image patches that got activated for a prototype.
 > python global_analysis_new.py
 
 2. Generate class distribution of each abnormality type if this information is available in the dataset (available for cbis). This is needed for the class-specific measure.
