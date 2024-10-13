@@ -46,7 +46,11 @@ Train ProtoPNet model on breast cancer:
 > python main.py
 
 Optionally, arguments can be passed to main.py <br/>
--gpuid, -disable_cuda, -start_epoch to resume training from a certain epoch, -best_score is the last best score before resuming training, needed for model checkpoint
+-gpuid (gpu id)
+-disable_cuda (disable cuda training) 
+-start_epoch to resume training from a certain epoch, 
+-best_score is the last best score before resuming training, needed for model checkpoint
+-mode: train or localization. Localization is used for localization measure calculation.
 
 Local explanations. Visualize top-k prototypes with similarity*weight score per image. 
 > python local_analysis.py
@@ -61,3 +65,19 @@ Global explanations. Visualize top-k activated patches from the training set per
 ### Black-box models
 
 ## Prototype Evaluation Framework for Coherence (PEF-Coh)
+Prototype evaluation framework script location for [ProtoPNet](protopnet/proto_eval_framework.py), [BRAIxProtoPNet++](braixprotopnet/proto_eval_framework.py) and [PIP-Net](pipnet/proto_eval_framework.py).
+
+For calculating the measures in PEF-Coh for ProtoPNet, follow:
+
+1. Generate protopnet_cbis_topk.csv, which is generated during global explanation generation
+> python global_analysis_new.py
+
+2. Generate class distribution of each abnormality type if available in the dataset. For cbis, this information is available. This is needed for the class-specific measure.
+> python data-processing/cbis/abnormalitytype_diagnosis.py
+
+3. Calculate relevance, specialization, uniqueness, coverage and class-specific measures.
+> python protopnet/proto_eval_framework.py --dataset cbis-ddsm --patch_size 130 130 --patch_proto_csv /home/pathaks/PhD/prototype-model-evaluation/protopnet/saved_models/cbis-ddsm/convnext_tiny_13/019/net_trained_best_8_8_nearest_train_protopnet/protopnet_cbis_topk.csv --image_size 1536 768
+
+4. Calculate localization
+> python main.py -mode localization
+
