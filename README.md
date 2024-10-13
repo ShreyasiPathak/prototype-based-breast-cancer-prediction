@@ -102,7 +102,7 @@ The file generated from the above script is needed for running the script below.
 > python data-processing/cbis/abnormalitytype_diagnosis.py
 
 3. Calculate relevance, specialization, uniqueness, coverage and class-specific measures.
-> python protopnet/proto_eval_framework.py --dataset cbis-ddsm --patch_size 130 130 --patch_proto_csv /home/pathaks/PhD/prototype-model-evaluation/protopnet/saved_models/cbis-ddsm/convnext_tiny_13/019/net_trained_best_8_8_nearest_train_protopnet/protopnet_cbis_topk.csv --image_size 1536 768
+> python protopnet/proto_eval_framework.py --dataset cbis-ddsm --patch_size 130 130 --state_dict_dir_net /home/pathaks/PhD/prototype-model-evaluation/protopnet/saved_models/cbis-ddsm/convnext_tiny_13/019/net_trained_best_8_8 --patch_proto_csv /home/pathaks/PhD/prototype-model-evaluation/protopnet/saved_models/cbis-ddsm/convnext_tiny_13/019/net_trained_best_8_8_nearest_train_protopnet/protopnet_cbis_topk.csv --image_size 1536 768
 
 4. Calculate localization measure
 > python main.py -mode localization
