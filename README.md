@@ -50,7 +50,7 @@ Optionally, arguments can be passed to main.py <br/>
 -disable_cuda (disable cuda training) <br/>
 -start_epoch to resume training from a certain epoch <br/>
 -best_score is the last best score before resuming training, needed for model checkpoint <br/>
--mode: train or localization. Localization is used for localization measure calculation.
+-mode: train or localization. Localization is used for calculation of localization measure.
 
 In protopnet/settings.py, you can add the settings for training the model.
 
@@ -68,7 +68,7 @@ Optionally, arguments can be passed to main.py <br/>
 -gpuid (gpu id), <br/>
 -disable_cuda (disable cuda training) <br/>
 -start_epoch to resume training from a certain epoch <br/>
--mode: train or localization. Localization is used for localization measure calculation.
+-mode: train or localization. Localization is used for calculation of localization measure.
 
 In braixprotopnet/settings.py, you can add the settings for training the model.
 
