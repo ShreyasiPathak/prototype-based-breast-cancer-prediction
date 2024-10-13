@@ -36,7 +36,7 @@ We preprocessed the dataset as follows:
 ### Preparation of Input csv files
 
 Sample of the input csv file containing details about each instance in the dataset can be found [here](sample-input-csv-file).
-Input csv files for CMMD can be created using our script [here](data-processing/cmmd/utilities.py). 
+We provide the script for creating the input csv files for CMMD [here](data-processing/cmmd/utilities.py). 
 
 ## Model Training and Global and Local Explanation
 
@@ -46,10 +46,10 @@ Train ProtoPNet model on breast cancer:
 > python main.py
 
 Optionally, arguments can be passed to main.py <br/>
--gpuid (gpu id)
--disable_cuda (disable cuda training) 
--start_epoch to resume training from a certain epoch, 
--best_score is the last best score before resuming training, needed for model checkpoint
+-gpuid (gpu id), <br/>
+-disable_cuda (disable cuda training) <br/>
+-start_epoch to resume training from a certain epoch <br/>
+-best_score is the last best score before resuming training, needed for model checkpoint <br/>
 -mode: train or localization. Localization is used for localization measure calculation.
 
 In protopnet/settings.py, you can add the settings for training the model.
@@ -76,7 +76,11 @@ For calculating the measures in PEF-Coh for ProtoPNet, follow:
 1. Generate protopnet_cbis_topk.csv, which is generated during global explanation generation
 > python global_analysis_new.py
 
-2. Generate class distribution of each abnormality type if this information is available in the dataset. This is needed for the class-specific measure. For cbis, this information is available. Running the following line will generate cbisddsm_abnormalitygroup_malignant_benign_count.csv.
+2. Generate class distribution of each abnormality type if this information is available in the dataset (available for cbis). This is needed for the class-specific measure.
+First, create the ROI csv file with all information about the ROIs. Inside the script below, check that file_creation = 'ROI' in main function. If not, then set it.
+> python data-processing/cbis/input_csv_file_creation_cbis.py
+
+The file generated from the above script is needed for running the script below. Run the following line to generate cbisddsm_abnormalitygroup_malignant_benign_count.csv.
 > python data-processing/cbis/abnormalitytype_diagnosis.py
 
 3. Calculate relevance, specialization, uniqueness, coverage and class-specific measures.
