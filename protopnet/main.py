@@ -104,6 +104,7 @@ parser.add_argument('-disable_cuda', action='store_true', help='Flag that disabl
 parser.add_argument('-start_epoch', type=int, default=0)
 parser.add_argument('-state_dict_dir_net', type=str, default='')
 parser.add_argument('-best_score', type=float, default=0.0)
+parser.add_argument('-mode', type=str, default='train')
 
 args = parser.parse_args()
 
@@ -279,118 +280,119 @@ else:
 
 modelcheckpoint = save.ModelCheckpoint(log_dir+'/'+'net_trained_best'+'_'+str(randseedother)+'_'+str(randseeddata), 'auc', best_score_val)
 
-#model training across num_train_epochs
-for epoch in range(start_epoch, num_train_epochs+1):
-    log('epoch: \t{0}'.format(epoch))
-    
-    #if epoch!=11:
-    #add-on layer, prototype vector 
-    if epoch <= num_warm_epochs:
-        tnt.warm_only(model=ppnet, log=log)
-        info_train, _ = tnt.train(model=ppnet, dataloader=train_loader, optimizer=warm_optimizer,
-                    epoch=epoch, last_lr= warm_optimizer_lrs['add_on_layers'], class_specific=class_specific, coefs=coefs, log=log, device=device)
-        if usevalidation:
-            info_val, _ = tnt.val(model=ppnet, dataloader=val_loader, epoch=epoch, class_specific=class_specific, coefs=coefs, log=log, device=device)
+if args.mode == 'train':
+    #model training across num_train_epochs
+    for epoch in range(start_epoch, num_train_epochs+1):
+        log('epoch: \t{0}'.format(epoch))
         
-        last_lr = warm_optimizer_lrs['add_on_layers']
-        optimizer = warm_optimizer
-        epoch_warm = epoch
-        epoch_joint = 0
-        lrs.append(last_lr)
-        #lrs.append(warm_optimizer_lrs['add_on_layers'])
-    
-    #training the whole network
-    else:
-        tnt.joint(model=ppnet, log=log)
-        #joint_lr_scheduler.step()
-        info_train, lrs = tnt.train(model=ppnet, dataloader=train_loader, optimizer=joint_optimizer,
-                    epoch=epoch, last_lr=joint_optimizer_lrs['features'], lrs=lrs, lr_scheduler=joint_lr_scheduler, class_specific=class_specific, coefs=coefs, log=log, device=device)
-        if usevalidation:
-            info_val, _ = tnt.val(model=ppnet, dataloader=val_loader, epoch=epoch, class_specific=class_specific, coefs=coefs, log=log, device=device)
+        #if epoch!=11:
+        #add-on layer, prototype vector 
+        if epoch <= num_warm_epochs:
+            tnt.warm_only(model=ppnet, log=log)
+            info_train, _ = tnt.train(model=ppnet, dataloader=train_loader, optimizer=warm_optimizer,
+                        epoch=epoch, last_lr= warm_optimizer_lrs['add_on_layers'], class_specific=class_specific, coefs=coefs, log=log, device=device)
+            if usevalidation:
+                info_val, _ = tnt.val(model=ppnet, dataloader=val_loader, epoch=epoch, class_specific=class_specific, coefs=coefs, log=log, device=device)
+            
+            last_lr = warm_optimizer_lrs['add_on_layers']
+            optimizer = warm_optimizer
+            epoch_warm = epoch
+            epoch_joint = 0
+            lrs.append(last_lr)
+            #lrs.append(warm_optimizer_lrs['add_on_layers'])
         
-        if lrscheduler == 'lrdecay':
-            joint_lr_scheduler.step()
-            lrs.append(joint_lr_scheduler.get_last_lr()[0])
-        elif lrscheduler=='fixedlr':
-            lrs.append(joint_optimizer_lrs['features'])
+        #training the whole network
+        else:
+            tnt.joint(model=ppnet, log=log)
+            #joint_lr_scheduler.step()
+            info_train, lrs = tnt.train(model=ppnet, dataloader=train_loader, optimizer=joint_optimizer,
+                        epoch=epoch, last_lr=joint_optimizer_lrs['features'], lrs=lrs, lr_scheduler=joint_lr_scheduler, class_specific=class_specific, coefs=coefs, log=log, device=device)
+            if usevalidation:
+                info_val, _ = tnt.val(model=ppnet, dataloader=val_loader, epoch=epoch, class_specific=class_specific, coefs=coefs, log=log, device=device)
+            
+            if lrscheduler == 'lrdecay':
+                joint_lr_scheduler.step()
+                lrs.append(joint_lr_scheduler.get_last_lr()[0])
+            elif lrscheduler=='fixedlr':
+                lrs.append(joint_optimizer_lrs['features'])
 
-        last_lr = lrs[-1]
-        optimizer = joint_optimizer
-        epoch_warm = num_warm_epochs
-        epoch_joint = epoch
+            last_lr = lrs[-1]
+            optimizer = joint_optimizer
+            epoch_warm = num_warm_epochs
+            epoch_joint = epoch
 
-    if usevalidation:
-        modelcheckpoint(info_val['avg_loss'], ppnet, info_train['conf_mat'], info_val['conf_mat'], warm_optimizer, joint_optimizer, epoch_warm, epoch_joint, info_val['auc'])
-        results_store_excel(True, True, False, None, info_train, info_val, epoch, last_lr, None, log_dir+'/results'+'_'+str(randseedother)+'_'+str(randseeddata)+'.xlsx')
-        write_results_xlsx_confmat(list(range(num_classes)), info_train['conf_mat'], log_dir+'/results'+'_'+str(randseedother)+'_'+str(randseeddata)+'.xlsx', 'confmat_train_val_test')
-        write_results_xlsx_confmat(list(range(num_classes)), info_val['conf_mat'], log_dir+'/results'+'_'+str(randseedother)+'_'+str(randseeddata)+'.xlsx', 'confmat_train_val_test')
-        save.save_model(ppnet, warm_optimizer, joint_optimizer, epoch_warm, epoch_joint, info_val['auc'], log_dir+'/'+'net_trained_last'+'_'+str(randseedother)+'_'+str(randseeddata))
-    else:
-        results_store_excel(True, False, False, None, info_train, None, epoch, last_lr, None, log_dir+'/results'+'_'+str(randseedother)+'_'+str(randseeddata)+'.xlsx')
-        write_results_xlsx_confmat(list(range(num_classes)), info_train['conf_mat'], log_dir+'/results'+'_'+str(randseedother)+'_'+str(randseeddata)+'.xlsx', 'confmat_train_val_test')
-        save.save_model(ppnet, warm_optimizer, joint_optimizer, epoch_warm, epoch_joint, info_train['auc'], log_dir+'/'+'net_trained_last'+'_'+str(randseedother)+'_'+str(randseeddata))
+        if usevalidation:
+            modelcheckpoint(info_val['avg_loss'], ppnet, info_train['conf_mat'], info_val['conf_mat'], warm_optimizer, joint_optimizer, epoch_warm, epoch_joint, info_val['auc'])
+            results_store_excel(True, True, False, None, info_train, info_val, epoch, last_lr, None, log_dir+'/results'+'_'+str(randseedother)+'_'+str(randseeddata)+'.xlsx')
+            write_results_xlsx_confmat(list(range(num_classes)), info_train['conf_mat'], log_dir+'/results'+'_'+str(randseedother)+'_'+str(randseeddata)+'.xlsx', 'confmat_train_val_test')
+            write_results_xlsx_confmat(list(range(num_classes)), info_val['conf_mat'], log_dir+'/results'+'_'+str(randseedother)+'_'+str(randseeddata)+'.xlsx', 'confmat_train_val_test')
+            save.save_model(ppnet, warm_optimizer, joint_optimizer, epoch_warm, epoch_joint, info_val['auc'], log_dir+'/'+'net_trained_last'+'_'+str(randseedother)+'_'+str(randseeddata))
+        else:
+            results_store_excel(True, False, False, None, info_train, None, epoch, last_lr, None, log_dir+'/results'+'_'+str(randseedother)+'_'+str(randseeddata)+'.xlsx')
+            write_results_xlsx_confmat(list(range(num_classes)), info_train['conf_mat'], log_dir+'/results'+'_'+str(randseedother)+'_'+str(randseeddata)+'.xlsx', 'confmat_train_val_test')
+            save.save_model(ppnet, warm_optimizer, joint_optimizer, epoch_warm, epoch_joint, info_train['auc'], log_dir+'/'+'net_trained_last'+'_'+str(randseedother)+'_'+str(randseeddata))
 
-    info_test, _ = tnt.test(model=ppnet, dataloader=test_loader,
-                    epoch=epoch, coefs=coefs, class_specific=class_specific, log=log, device=device)
-    #accu = info_test['correct']/info_test['total_image']
-    #save.save_model(ppnet, warm_optimizer, joint_optimizer, epoch_warm, epoch_joint, accu, log_dir+'/'+'net_trained'+'_nopush_'+str(randseedother)+'_'+str(randseeddata))
-    #save.save_model_w_condition(model=ppnet, model_dir=model_dir, model_name=str(epoch) + 'nopush', accu=accu,
-    #                            target_accu=0.50, log=log)
-    
-    #if epoch > num_warm_epochs:
-    if epoch >= push_start and epoch in push_epochs:
-        push.push_prototypes(
-            train_push_loader, # pytorch dataloader (must be unnormalized in [0,1])
-            prototype_network_parallel=ppnet, # pytorch network with prototype_vectors
-            class_specific=class_specific,
-            preprocess_input_function=preprocess_input_function, # normalize if needed
-            prototype_layer_stride=1,
-            root_dir_for_saving_prototypes=img_dir, # if not None, prototypes will be saved here
-            epoch_number=epoch, # if not provided, prototypes saved previously will be overwritten
-            prototype_img_filename_prefix=prototype_img_filename_prefix,
-            prototype_self_act_filename_prefix=prototype_self_act_filename_prefix,
-            proto_bound_boxes_filename_prefix=proto_bound_boxes_filename_prefix,
-            save_prototype_class_identity=True,
-            log=log,
-            device=device)
         info_test, _ = tnt.test(model=ppnet, dataloader=test_loader,
                         epoch=epoch, coefs=coefs, class_specific=class_specific, log=log, device=device)
         #accu = info_test['correct']/info_test['total_image']
-        #save.save_model(ppnet, warm_optimizer, joint_optimizer, epoch_warm, epoch_joint, accu, log_dir+'/'+'net_trained'+'_push_'+str(randseedother)+'_'+str(randseeddata))
-        #save.save_model_w_condition(model=ppnet, model_dir=model_dir, model_name=str(epoch) + 'push', accu=accu,
+        #save.save_model(ppnet, warm_optimizer, joint_optimizer, epoch_warm, epoch_joint, accu, log_dir+'/'+'net_trained'+'_nopush_'+str(randseedother)+'_'+str(randseeddata))
+        #save.save_model_w_condition(model=ppnet, model_dir=model_dir, model_name=str(epoch) + 'nopush', accu=accu,
         #                            target_accu=0.50, log=log)
-
-        #training the last layer for sparsity
-        if prototype_activation_function != 'linear':
-            tnt.last_only(model=ppnet, log=log)
-            for i in range(20):
-                log('iteration: \t{0}'.format(i))
-                info_train, _ = tnt.train(model=ppnet, dataloader=train_loader, optimizer=last_layer_optimizer,
-                                epoch=epoch, last_lr=last_layer_optimizer_lr, class_specific=class_specific, coefs=coefs, log=log, device=device)
-                
-                if usevalidation:
-                    info_val, _ = tnt.val(model=ppnet, dataloader=val_loader, epoch=epoch, class_specific=class_specific, coefs=coefs, log=log, device=device)
-                    results_store_excel(True, True, False, None, info_train, info_val, epoch, last_layer_optimizer_lr, None, log_dir+'/results'+'_'+str(randseedother)+'_'+str(randseeddata)+'.xlsx')
-                else:
-                    results_store_excel(True, False, False, None, info_train, None, epoch, last_lr, None, log_dir+'/results'+'_'+str(randseedother)+'_'+str(randseeddata)+'.xlsx')
-                
-                #accu = info_test['correct']/info_test['total_image']
-                #save.save_model(ppnet, warm_optimizer, joint_optimizer, epoch_warm, epoch_joint, accu, log_dir+'/'+'net_trained'+'_push_sparsity_'+str(randseedother)+'_'+str(randseeddata))
-                #save.save_model_w_condition(model=ppnet, model_dir=model_dir, model_name=str(epoch) + '_' + str(i) + 'push', accu=accu,
-                #                            target_accu=0.50, log=log)
-                lrs.append(last_layer_optimizer_lr)
-            
-                if usevalidation:
-                    modelcheckpoint(info_val['avg_loss'], ppnet, info_train['conf_mat'], info_val['conf_mat'], warm_optimizer, joint_optimizer, epoch_warm, epoch_joint, info_val['auc'])
-                else:
-                    save.save_model(ppnet, warm_optimizer, joint_optimizer, epoch_warm, epoch_joint, info_train['auc'], log_dir+'/'+'net_trained_last'+'_'+str(randseedother)+'_'+str(randseeddata))
-
+        
+        #if epoch > num_warm_epochs:
+        if epoch >= push_start and epoch in push_epochs:
+            push.push_prototypes(
+                train_push_loader, # pytorch dataloader (must be unnormalized in [0,1])
+                prototype_network_parallel=ppnet, # pytorch network with prototype_vectors
+                class_specific=class_specific,
+                preprocess_input_function=preprocess_input_function, # normalize if needed
+                prototype_layer_stride=1,
+                root_dir_for_saving_prototypes=img_dir, # if not None, prototypes will be saved here
+                epoch_number=epoch, # if not provided, prototypes saved previously will be overwritten
+                prototype_img_filename_prefix=prototype_img_filename_prefix,
+                prototype_self_act_filename_prefix=prototype_self_act_filename_prefix,
+                proto_bound_boxes_filename_prefix=proto_bound_boxes_filename_prefix,
+                save_prototype_class_identity=True,
+                log=log,
+                device=device)
             info_test, _ = tnt.test(model=ppnet, dataloader=test_loader,
                             epoch=epoch, coefs=coefs, class_specific=class_specific, log=log, device=device)
-        
-    plt.clf()
-    plt.plot(lrs)
-    plt.savefig(os.path.join(model_dir,'lr_protopnet'+'_'+str(randseedother)+'_'+str(randseeddata)+'.png'))
+            #accu = info_test['correct']/info_test['total_image']
+            #save.save_model(ppnet, warm_optimizer, joint_optimizer, epoch_warm, epoch_joint, accu, log_dir+'/'+'net_trained'+'_push_'+str(randseedother)+'_'+str(randseeddata))
+            #save.save_model_w_condition(model=ppnet, model_dir=model_dir, model_name=str(epoch) + 'push', accu=accu,
+            #                            target_accu=0.50, log=log)
+
+            #training the last layer for sparsity
+            if prototype_activation_function != 'linear':
+                tnt.last_only(model=ppnet, log=log)
+                for i in range(20):
+                    log('iteration: \t{0}'.format(i))
+                    info_train, _ = tnt.train(model=ppnet, dataloader=train_loader, optimizer=last_layer_optimizer,
+                                    epoch=epoch, last_lr=last_layer_optimizer_lr, class_specific=class_specific, coefs=coefs, log=log, device=device)
+                    
+                    if usevalidation:
+                        info_val, _ = tnt.val(model=ppnet, dataloader=val_loader, epoch=epoch, class_specific=class_specific, coefs=coefs, log=log, device=device)
+                        results_store_excel(True, True, False, None, info_train, info_val, epoch, last_layer_optimizer_lr, None, log_dir+'/results'+'_'+str(randseedother)+'_'+str(randseeddata)+'.xlsx')
+                    else:
+                        results_store_excel(True, False, False, None, info_train, None, epoch, last_lr, None, log_dir+'/results'+'_'+str(randseedother)+'_'+str(randseeddata)+'.xlsx')
+                    
+                    #accu = info_test['correct']/info_test['total_image']
+                    #save.save_model(ppnet, warm_optimizer, joint_optimizer, epoch_warm, epoch_joint, accu, log_dir+'/'+'net_trained'+'_push_sparsity_'+str(randseedother)+'_'+str(randseeddata))
+                    #save.save_model_w_condition(model=ppnet, model_dir=model_dir, model_name=str(epoch) + '_' + str(i) + 'push', accu=accu,
+                    #                            target_accu=0.50, log=log)
+                    lrs.append(last_layer_optimizer_lr)
+                
+                    if usevalidation:
+                        modelcheckpoint(info_val['avg_loss'], ppnet, info_train['conf_mat'], info_val['conf_mat'], warm_optimizer, joint_optimizer, epoch_warm, epoch_joint, info_val['auc'])
+                    else:
+                        save.save_model(ppnet, warm_optimizer, joint_optimizer, epoch_warm, epoch_joint, info_train['auc'], log_dir+'/'+'net_trained_last'+'_'+str(randseedother)+'_'+str(randseeddata))
+
+                info_test, _ = tnt.test(model=ppnet, dataloader=test_loader,
+                                epoch=epoch, coefs=coefs, class_specific=class_specific, log=log, device=device)
+            
+        plt.clf()
+        plt.plot(lrs)
+        plt.savefig(os.path.join(model_dir,'lr_protopnet'+'_'+str(randseedother)+'_'+str(randseeddata)+'.png'))
 
 #added this just for experimenting with something. Not important.         
 '''push.push_prototypes(
@@ -410,11 +412,12 @@ for epoch in range(start_epoch, num_train_epochs+1):
 info_test, _ = tnt.test(model=ppnet, dataloader=test_loader, epoch=start_epoch, coefs=coefs, class_specific=class_specific, log=log, device=device)
 '''
 
-# uncomment for calculating the IoU and DSC scores of the match between the prototypes and the ROIs 
-'''if dataset == 'cbis-ddsm':
-    get_images(ppnet, test_loader, df_test, device, args, 'IOU')
-    get_images(ppnet, test_loader, df_test, device, args, 'DSC')
-'''
+#calculate the IoU and DSC scores of the match between the prototypes and the ROIs 
+if args.mode == 'localization':
+    if dataset == 'cbis-ddsm':
+        get_images(ppnet, test_loader, df_test, device, args, 'IOU')
+        get_images(ppnet, test_loader, df_test, device, args, 'DSC')
+    
 
 '''end_time = datetime.datetime.now()
 log("Start time: {0}".format(str(begin_time)))
