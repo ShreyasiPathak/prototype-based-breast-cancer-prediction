@@ -78,7 +78,7 @@ For calculating the measures in PEF-Coh for ProtoPNet, follow:
 
 2. Generate class distribution of each abnormality type if this information is available in the dataset (available for cbis). This is needed for the class-specific measure.
 
-First, create the ROI csv file with all information about the ROIs. Inside the script below, check that file_creation = 'ROI' in main function. If not, then set it.
+First, create the ROI csv file with all information about the ROIs ([sample of the ROI can be found here](sample-input-csv-file/MG_training_files_cbis-ddsm_roi_groundtruth.csv)). Inside the script below, check that file_creation = 'ROI' in main function. If not, then set it and run the folllowing:
 > python data-processing/cbis/input_csv_file_creation_cbis.py
 
 The file generated from the above script is needed for running the script below. Run the following line to generate cbisddsm_abnormalitygroup_malignant_benign_count.csv.
