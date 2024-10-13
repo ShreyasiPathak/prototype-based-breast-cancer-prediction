@@ -36,7 +36,7 @@ We preprocessed the dataset as follows:
 ### Preparation of Input csv files
 
 Sample of the input csv file containing details about each instance in the dataset can be found [here](sample-input-csv-file).
-We provide the script for creating the input csv files for CMMD [here](data-processing/cmmd/utilities.py). 
+We provide the script for creating the input csv files for [CMMD](data-processing/cmmd/utilities.py), [CBIS](data-processing/cbis/input_csv_file_creation_cbis.py) and [VinDr](data-processing/vindr/utilities.py).  
 
 ## Model Training and Global and Local Explanation
 
@@ -77,7 +77,8 @@ For calculating the measures in PEF-Coh for ProtoPNet, follow:
 > python global_analysis_new.py
 
 2. Generate class distribution of each abnormality type if this information is available in the dataset (available for cbis). This is needed for the class-specific measure.
-First, create the ROI csv file with all information about the ROIs. Inside the script below, check that file_creation = 'ROI' in main function. If not, then set it.
+
+First, create the ROI csv file with all information about the ROIs ([sample of the ROI can be found here](sample-input-csv-file/cbis/MG_training_files_cbis-ddsm_roi_groundtruth.csv)). Inside the script below, check that file_creation = 'ROI' in main function. If not, then set it and run the folllowing:
 > python data-processing/cbis/input_csv_file_creation_cbis.py
 
 The file generated from the above script is needed for running the script below. Run the following line to generate cbisddsm_abnormalitygroup_malignant_benign_count.csv.
@@ -89,3 +90,4 @@ The file generated from the above script is needed for running the script below.
 4. Calculate localization measure
 > python main.py -mode localization
 
+Similar process can be followed for [BRAIxProtoPNet++](braixprotopnet/proto_eval_framework.py) and [PIP-Net](pipnet/src/util/proto_eval_framework.py).
