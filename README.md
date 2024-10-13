@@ -72,7 +72,7 @@ For calculating the measures in PEF-Coh for ProtoPNet, follow:
 1. Generate protopnet_cbis_topk.csv, which is generated during global explanation generation
 > python global_analysis_new.py
 
-2. Generate class distribution of each abnormality type if this information is available in the dataset (cbisddsm_abnormalitygroup_malignant_benign_count.csv). This is needed for the class-specific measure. For cbis, this information is available.
+2. Generate class distribution of each abnormality type if this information is available in the dataset. This is needed for the class-specific measure. For cbis, this information is available. Running the following line will generate cbisddsm_abnormalitygroup_malignant_benign_count.csv.
 > python data-processing/cbis/abnormalitytype_diagnosis.py
 
 3. Calculate relevance, specialization, uniqueness, coverage and class-specific measures.
