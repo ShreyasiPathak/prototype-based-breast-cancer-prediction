@@ -65,7 +65,7 @@ Global explanations. Visualize top-k activated patches from the training set per
 ### Black-box models
 
 ## Prototype Evaluation Framework for Coherence (PEF-Coh)
-Prototype evaluation framework script location for [ProtoPNet](protopnet/proto_eval_framework.py), [BRAIxProtoPNet++](braixprotopnet/proto_eval_framework.py) and [PIP-Net](pipnet/proto_eval_framework.py).
+Prototype evaluation framework script location for [ProtoPNet](protopnet/proto_eval_framework.py), [BRAIxProtoPNet++](braixprotopnet/proto_eval_framework.py) and [PIP-Net](pipnet/util/proto_eval_framework.py).
 
 For calculating the measures in PEF-Coh for ProtoPNet, follow:
 
