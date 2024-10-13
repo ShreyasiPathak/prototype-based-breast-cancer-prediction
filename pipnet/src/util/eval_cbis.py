@@ -106,58 +106,6 @@ def bounding_box_true_pred(original_image, true_mask_loc_all, pred_mask_loc_all,
         ax[view_id].add_patch(rect2)
     return figure, ax
 
-def extract_patch_position_wrt_image(original_img_pytorch, crop_shape, crop_position, method="center"):
-    """
-    Function that take a crop on the original image.
-    Use PyTorch to do this.
-    :param original_img_pytorch: (N,C,H,W) PyTorch Tensor
-    :param crop_shape: (h, w) integer tuple
-    :param method: supported in ["center", "upper_left"]
-    :return: (N, K, h, w) PyTorch Tensor
-    (0,0) is at the top left.
-    crop_position: h, w
-    """
-    # retrieve inputs
-    _, H, W = original_img_pytorch.shape
-    crop_y, crop_x = crop_position 
-    y_delta, x_delta = crop_shape
-
-    # locate the four corners
-    if method == "center":
-        min_y = int(np.round(crop_y - y_delta / 2))
-        max_y = int(np.round(crop_y + y_delta / 2))
-        min_x = int(np.round(crop_x - x_delta / 2))
-        max_x = int(np.round(crop_x + x_delta / 2))
-    elif method == "upper_left":
-        min_y = int(np.round(crop_y))
-        max_y = int(np.round(crop_y + y_delta))
-        min_x = int(np.round(crop_x))
-        max_x = int(np.round(crop_x + x_delta))
-
-    # make sure that the crops are in range
-    min_y = gmic_utils.make_sure_in_range(min_y, 0, H)
-    max_y = gmic_utils.make_sure_in_range(max_y, 0, H)
-    min_x = gmic_utils.make_sure_in_range(min_x, 0, W)
-    max_x = gmic_utils.make_sure_in_range(max_x, 0, W)
-
-    if (max_y - min_y) < y_delta:
-        gap = y_delta - (max_y - min_y)
-        if (max_y + gap) < H:
-            max_y = max_y + gap
-        elif (min_y - gap) > 0:
-            min_y = min_y - gap
-    
-    elif (max_x - min_x) < x_delta:
-        gap = x_delta - (max_x - min_x)
-        if (max_x + gap) < W:
-            max_x = max_x + gap
-        elif (min_x - gap) > 0:
-            min_x = min_x - gap
-
-    patch_position = [min_x, min_y, max_x, max_y] 
-
-    return patch_position
-
 def match_to_mask_images_cbis(config_params, original_image, exam_name, model_patch_locations, seg_eval_metric):
     """
     Function to calculate how much does the patch extracted by the model match to the true ROI 
