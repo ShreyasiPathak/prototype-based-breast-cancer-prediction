@@ -109,6 +109,7 @@ def bounding_box_true_pred(original_image, true_mask_loc_all, pred_mask_loc_all,
         ax[view_id].add_patch(rect2)
     return figure, ax
 
+'''
 def extract_patch_position_wrt_image(original_img_pytorch, crop_shape, crop_position, method="center"):
     """
     Function that take a crop on the original image.
@@ -160,6 +161,7 @@ def extract_patch_position_wrt_image(original_img_pytorch, crop_shape, crop_posi
     patch_position = [min_x, min_y, max_x, max_y] 
 
     return patch_position
+'''
 
 def map_region_to_fixed_patch_size(bounding_box, patch_size):
     h_min_224 = bounding_box[0]
