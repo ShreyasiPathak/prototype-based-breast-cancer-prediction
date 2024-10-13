@@ -55,12 +55,29 @@ Optionally, arguments can be passed to main.py <br/>
 In protopnet/settings.py, you can add the settings for training the model.
 
 Local explanations. Visualize top-k prototypes with similarity*weight score per image. 
-> python local_analysis.py
+> python protopnet/local_analysis.py
 
 Global explanations. Visualize top-k activated patches from the training set per prototype.
-> python global_analysis_new.py
+> python protopnet/global_analysis_new.py
 
 ### BRAIxProtoPNet++
+Train BRAIxProtoPNet++ model on breast cancer:
+> python main.py
+
+Optionally, arguments can be passed to main.py <br/>
+-gpuid (gpu id), <br/>
+-disable_cuda (disable cuda training) <br/>
+-start_epoch to resume training from a certain epoch <br/>
+-mode: train or localization. Localization is used for localization measure calculation.
+
+In braixprotopnet/settings.py, you can add the settings for training the model.
+
+Local explanations. Visualize top-k prototypes with similarity*weight score per image. 
+> python braixprotopnet/local_analysis.py
+
+Global explanations. Visualize top-k activated patches from the training set per prototype.
+> python braixprotopnet/global_analysis_new.py
+
 
 ### PIP-Net
 
